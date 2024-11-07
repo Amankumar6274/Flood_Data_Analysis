@@ -1,12 +1,26 @@
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-from datetime import datetime
+# Import required libraries with error handling for missing modules
+try:
+    import streamlit as st
+    import pandas as pd
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    from datetime import datetime
+except ModuleNotFoundError as e:
+    st.error(f"Required module not found: {e.name}. Please check if it’s included in requirements.txt.")
+
+# Caching data load function to avoid reloading on every interaction
+@st.cache_data
+def load_data(path):
+    import os
+    if not os.path.exists(path):
+        st.error(f"Data file not found at {path}. Please ensure the file is correctly placed.")
+        return None
+    return pd.read_excel(path)
 
 # Load data
-data_path = 'C:\\flood_pred_app\\flood_pred_dummy_sheet.xlsx'
-data = pd.read_excel(data_path)
+data = load_data('flood_pred_dummy_sheet.xlsx')
+if data is None:
+    st.stop()  # Stop the app if data is not loaded
 
 # Set page configuration
 st.set_page_config(page_title="Flood Prediction Analysis", layout="wide")
